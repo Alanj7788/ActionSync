@@ -1,0 +1,35 @@
+# Environment variables
+
+.env
+
+# Google OAuth credentials and tokens
+
+credentials.json
+token.json
+
+# Python cache
+
+**pycache**/
+*.py[cod]
+
+# Virtual environments
+
+venv/
+.venv/
+env/
+
+# IDE settings
+
+.vscode/
+.idea/
+
+# Operating system files
+
+.DS_Store
+Thumbs.db
+
+# Backup and test files
+backupFull.py
+meeting_extractor.py
+test_gemini.py
+test_sheets.py
