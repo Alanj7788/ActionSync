@@ -162,15 +162,3 @@ __pycache__/
 These files are included in `.gitignore` to prevent sensitive credentials and local environment files from being uploaded to GitHub.
 
 ---
-
-## 👨‍💻 Author
-
-**Alan Jose**
-
-B.Tech Computer Science and Engineering
-
----
-
-## 📄 License
-
-This project was developed for educational and project submission purposes.
