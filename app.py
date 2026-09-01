@@ -49,13 +49,13 @@ meeting_notes = st.text_area(
     height=280,
     placeholder="""Example:
 
-Akhil will prepare the project presentation by Monday.
+Project Manager: Let's discuss the upcoming release.
 
-Jerin needs to test the login and registration modules by Wednesday.
+Alan: I will complete the authentication module by Friday.
 
-Abin will prepare the database documentation.
+Rahul: I will test the login and registration modules by Monday.
 
-The team should discuss deployment with the manager next Monday.""",
+Project Manager: Rahul, please share any critical issues with the team immediately.""",
     label_visibility="collapsed"
 )
 
@@ -71,15 +71,21 @@ if extract_button:
 
     if not meeting_title.strip():
 
-        st.warning("Please enter a meeting title.")
+        st.warning(
+            "Please enter a meeting title."
+        )
 
     elif not meeting_notes.strip():
 
-        st.warning("Please paste some meeting notes first.")
+        st.warning(
+            "Please paste some meeting notes first."
+        )
 
     else:
 
-        with st.spinner("🤖 Analyzing meeting notes..."):
+        with st.spinner(
+            "🤖 Analyzing meeting notes..."
+        ):
 
             try:
 
@@ -87,8 +93,13 @@ if extract_button:
                     meeting_notes
                 )
 
-                st.session_state["meeting_title"] = meeting_title
-                st.session_state["tasks"] = task_data
+                st.session_state[
+                    "meeting_title"
+                ] = meeting_title
+
+                st.session_state[
+                    "tasks"
+                ] = task_data
 
                 st.success(
                     f"Successfully extracted "
@@ -98,7 +109,8 @@ if extract_button:
             except Exception as e:
 
                 st.error(
-                    "Something went wrong while analyzing the meeting."
+                    "Something went wrong while "
+                    "analyzing the meeting."
                 )
 
                 st.exception(e)
@@ -152,8 +164,10 @@ if "tasks" in st.session_state:
         }
     )
 
-    st.session_state["tasks"] = edited_df.to_dict(
-        orient="records"
+    st.session_state["tasks"] = (
+        edited_df.to_dict(
+            orient="records"
+        )
     )
 
 
@@ -163,7 +177,9 @@ if "tasks" in st.session_state:
 
     csv_data = pd.DataFrame(
         st.session_state["tasks"]
-    ).to_csv(index=False)
+    ).to_csv(
+        index=False
+    )
 
     st.download_button(
         label="⬇️ Download CSV",
@@ -187,6 +203,9 @@ if "tasks" in st.session_state:
         del st.session_state["tasks"]
 
         if "meeting_title" in st.session_state:
-            del st.session_state["meeting_title"]
+
+            del st.session_state[
+                "meeting_title"
+            ]
 
         st.rerun()

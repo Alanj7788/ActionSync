@@ -1,15 +1,35 @@
-from ollama import chat
+from openai import OpenAI
 
-from config import OLLAMA_MODEL
+from config import (
+    AZURE_OPENAI_API_KEY,
+    AZURE_OPENAI_ENDPOINT,
+    AZURE_OPENAI_MODEL
+)
+
 from models import MeetingActions
+
+
+client = OpenAI(
+    api_key=AZURE_OPENAI_API_KEY,
+    base_url=(
+        f"{AZURE_OPENAI_ENDPOINT.rstrip('/')}"
+        "/openai/v1/"
+    )
+)
 
 
 def extract_action_items(meeting_notes):
 
-    prompt = f"""
+    completion = client.beta.chat.completions.parse(
+        model=AZURE_OPENAI_MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": """
 You are an AI meeting assistant.
 
-Analyze the following meeting notes and extract all actionable items.
+Your job is to analyze meeting conversations
+and extract all actionable items.
 
 For each action item:
 
@@ -18,36 +38,29 @@ For each action item:
 3. Extract the deadline if mentioned.
 4. Extract important follow-up activities.
 5. Never invent an owner or deadline.
-6. If information is missing, use "Not specified".
+6. If information is missing, use
+   "Not specified".
 
-Return the result strictly according to the provided JSON schema.
-
-Meeting notes:
-
-{meeting_notes}
+Return only information supported by
+the meeting conversation.
 """
-
-    response = chat(
-        model=OLLAMA_MODEL,
-        messages=[
+            },
             {
                 "role": "user",
-                "content": prompt
+                "content": meeting_notes
             }
         ],
-        format=MeetingActions.model_json_schema(),
-        options={
-            "temperature": 0
-        }
+        response_format=MeetingActions
     )
 
-    results = MeetingActions.model_validate_json(
-        response.message.content
-    )
+    results = completion.choices[
+        0
+    ].message.parsed
 
     task_data = []
 
     for item in results.action_items:
+
         task_data.append(
             {
                 "Task": item.task,

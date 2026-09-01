@@ -1,1 +1,17 @@
-OLLAMA_MODEL = "llama3.2:3b"
+import os
+
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+
+AZURE_OPENAI_API_KEY = os.getenv(
+    "AZURE_OPENAI_API_KEY"
+)
+
+AZURE_OPENAI_ENDPOINT = os.getenv(
+    "AZURE_OPENAI_ENDPOINT"
+)
+
+AZURE_OPENAI_MODEL = "YOUR_DEPLOYMENT_NAME"
