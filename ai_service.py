@@ -1,12 +1,10 @@
-from google import genai
+from ollama import chat
 
-from config import GEMINI_MODEL
+from config import OLLAMA_MODEL
 from models import MeetingActions
 
 
 def extract_action_items(meeting_notes):
-
-    client = genai.Client()
 
     prompt = f"""
 You are an AI meeting assistant.
@@ -25,21 +23,30 @@ For each action item:
 8. If a priority is mentioned separately but clearly refers
    to a task, associate that priority with the correct task.
 
+Return the result strictly according to the provided JSON schema.
+
 Meeting notes:
 
 {meeting_notes}
 """
 
-    response = client.models.generate_content(
-        model=GEMINI_MODEL,
-        contents=prompt,
-        config={
-            "response_mime_type": "application/json",
-            "response_schema": MeetingActions,
+    response = chat(
+        model=OLLAMA_MODEL,
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        format=MeetingActions.model_json_schema(),
+        options={
+            "temperature": 0
         }
     )
 
-    results = response.parsed
+    results = MeetingActions.model_validate_json(
+        response.message.content
+    )
 
     task_data = []
 

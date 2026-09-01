@@ -1,10 +1,8 @@
 import pandas as pd
 import streamlit as st
 
-from dotenv import load_dotenv
 
 from ai_service import extract_action_items
-from google_sheets import save_tasks_to_google_sheets
 from styles import load_styles
 
 
@@ -12,7 +10,6 @@ from styles import load_styles
 # LOAD ENVIRONMENT VARIABLES
 # ============================================================
 
-load_dotenv()
 
 
 # ============================================================
@@ -24,15 +21,6 @@ st.set_page_config(
     page_icon="📋",
     layout="wide"
 )
-
-
-# ============================================================
-# SESSION STATE
-# ============================================================
-
-if "is_saving" not in st.session_state:
-
-    st.session_state["is_saving"] = False
 
 
 # ============================================================
@@ -148,17 +136,6 @@ if extract_button:
                     "tasks"
                 ] = task_data
 
-                # Remove old Google Sheet
-                if "sheet_url" in st.session_state:
-
-                    del st.session_state[
-                        "sheet_url"
-                    ]
-
-                st.session_state[
-                    "is_saving"
-                ] = False
-
                 st.success(
                     f"Successfully extracted "
                     f"{len(task_data)} action items!"
@@ -223,33 +200,30 @@ if "tasks" in st.session_state:
                 width="medium"
             ),
 
-            "Priority":
-                st.column_config.SelectboxColumn(
-                    "Priority",
-                    options=[
-                        "High",
-                        "Medium",
-                        "Low",
-                        "Not specified"
-                    ]
-                ),
+            "Priority": st.column_config.SelectboxColumn(
+                "Priority",
+                options=[
+                    "High",
+                    "Medium",
+                    "Low",
+                    "Not specified"
+                ]
+            ),
 
-            "Follow-up":
-                st.column_config.TextColumn(
-                    "Follow-up",
-                    width="large"
-                ),
+            "Follow-up": st.column_config.TextColumn(
+                "Follow-up",
+                width="large"
+            ),
 
-            "Status":
-                st.column_config.SelectboxColumn(
-                    "Status",
-                    options=[
-                        "Not Started",
-                        "In Progress",
-                        "Completed",
-                        "Blocked"
-                    ]
-                ),
+            "Status": st.column_config.SelectboxColumn(
+                "Status",
+                options=[
+                    "Not Started",
+                    "In Progress",
+                    "Completed",
+                    "Blocked"
+                ]
+            ),
         }
     )
 
@@ -262,126 +236,28 @@ if "tasks" in st.session_state:
 
 
 # ============================================================
-# SAVE TO GOOGLE SHEETS + DOWNLOAD CSV
+# DOWNLOAD CSV
 # ============================================================
 
 if "tasks" in st.session_state:
 
     st.divider()
 
-    col1, col2 = st.columns(2)
-
-
-    # ========================================================
-    # GOOGLE SHEETS BUTTON
-    # ========================================================
-
-    with col1:
-
-        # AFTER SAVING
-        if "sheet_url" in st.session_state:
-
-            st.link_button(
-                "↗ Open Google Sheet",
-                st.session_state[
-                    "sheet_url"
-                ],
-                type="primary",
-                use_container_width=True
-            )
-
-        # BEFORE SAVING
-        else:
-
-            save_button_placeholder = st.empty()
-
-            save_clicked = (
-                save_button_placeholder.button(
-                    "💾 Save to Google Sheets",
-                    type="primary",
-                    use_container_width=True,
-                    disabled=st.session_state[
-                        "is_saving"
-                    ]
-                )
-            )
-
-            if save_clicked:
-
-                # Change state
-                st.session_state[
-                    "is_saving"
-                ] = True
-
-                # Replace same button
-                save_button_placeholder.button(
-                    "⏳ Saving...",
-                    type="primary",
-                    use_container_width=True,
-                    disabled=True
-                )
-
-                try:
-
-                    sheet_url = (
-                        save_tasks_to_google_sheets(
-                            st.session_state[
-                                "meeting_title"
-                            ],
-                            st.session_state[
-                                "tasks"
-                            ]
-                        )
-                    )
-
-                    # Store URL
-                    st.session_state[
-                        "sheet_url"
-                    ] = sheet_url
-
-                    st.session_state[
-                        "is_saving"
-                    ] = False
-
-                    # Rerun to show Open button
-                    save_button_placeholder.empty()
-
-                    st.rerun()
-
-                except Exception as e:
-
-                    st.session_state[
-                        "is_saving"
-                    ] = False
-
-                    st.error(
-                        "Unable to save tasks "
-                        "to Google Sheets."
-                    )
-
-                    st.exception(e)
-
-
-    # ========================================================
-    # CSV DOWNLOAD
-    # ========================================================
-
-    with col2:
-
-        csv_data = (
-            pd.DataFrame(
-                st.session_state["tasks"]
-            )
-            .to_csv(index=False)
+    csv_data = (
+        pd.DataFrame(
+            st.session_state["tasks"]
         )
+        .to_csv(index=False)
+    )
 
-        st.download_button(
-            label="⬇️ Download CSV",
-            data=csv_data,
-            file_name="meeting_action_items.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
+    st.download_button(
+        label="⬇️ Download CSV",
+        data=csv_data,
+        file_name="meeting_action_items.csv",
+        mime="text/csv",
+        type="primary",
+        use_container_width=True
+    )
 
 
 # ============================================================
@@ -399,9 +275,7 @@ if "tasks" in st.session_state:
 
         keys_to_remove = [
             "tasks",
-            "meeting_title",
-            "sheet_url",
-            "is_saving"
+            "meeting_title"
         ]
 
         for key in keys_to_remove:
