@@ -1,20 +1,9 @@
 import pandas as pd
 import streamlit as st
 
-
 from ai_service import extract_action_items
 from styles import load_styles
 
-
-# ============================================================
-# LOAD ENVIRONMENT VARIABLES
-# ============================================================
-
-
-
-# ============================================================
-# PAGE CONFIGURATION
-# ============================================================
 
 st.set_page_config(
     page_title="Instant Meeting Action Taker",
@@ -22,17 +11,8 @@ st.set_page_config(
     layout="wide"
 )
 
-
-# ============================================================
-# LOAD CUSTOM STYLES
-# ============================================================
-
 load_styles()
 
-
-# ============================================================
-# HEADER
-# ============================================================
 
 st.markdown(
     """
@@ -54,10 +34,6 @@ st.markdown(
 )
 
 
-# ============================================================
-# MEETING DETAILS
-# ============================================================
-
 st.subheader("📝 Meeting Details")
 
 meeting_title = st.text_input(
@@ -65,10 +41,6 @@ meeting_title = st.text_input(
     placeholder="Example: Project Release Discussion"
 )
 
-
-# ============================================================
-# MEETING NOTES
-# ============================================================
 
 st.subheader("📝 Meeting Notes")
 
@@ -83,16 +55,10 @@ Jerin needs to test the login and registration modules by Wednesday.
 
 Abin will prepare the database documentation.
 
-The team should discuss deployment with the manager next Monday.
-
-The login testing is high priority.""",
+The team should discuss deployment with the manager next Monday.""",
     label_visibility="collapsed"
 )
 
-
-# ============================================================
-# EXTRACT ACTION ITEMS
-# ============================================================
 
 extract_button = st.button(
     "✨ Extract Action Items",
@@ -105,21 +71,15 @@ if extract_button:
 
     if not meeting_title.strip():
 
-        st.warning(
-            "Please enter a meeting title."
-        )
+        st.warning("Please enter a meeting title.")
 
     elif not meeting_notes.strip():
 
-        st.warning(
-            "Please paste some meeting notes first."
-        )
+        st.warning("Please paste some meeting notes first.")
 
     else:
 
-        with st.spinner(
-            "🤖 Analyzing meeting notes..."
-        ):
+        with st.spinner("🤖 Analyzing meeting notes..."):
 
             try:
 
@@ -127,14 +87,8 @@ if extract_button:
                     meeting_notes
                 )
 
-                # Save meeting data
-                st.session_state[
-                    "meeting_title"
-                ] = meeting_title
-
-                st.session_state[
-                    "tasks"
-                ] = task_data
+                st.session_state["meeting_title"] = meeting_title
+                st.session_state["tasks"] = task_data
 
                 st.success(
                     f"Successfully extracted "
@@ -144,28 +98,19 @@ if extract_button:
             except Exception as e:
 
                 st.error(
-                    "Something went wrong while "
-                    "analyzing the meeting."
+                    "Something went wrong while analyzing the meeting."
                 )
 
                 st.exception(e)
 
 
-# ============================================================
-# DISPLAY RESULTS
-# ============================================================
-
 if "tasks" in st.session_state:
 
     st.divider()
 
-    st.subheader(
-        "✅ Action Items"
-    )
+    st.subheader("✅ Action Items")
 
-    tasks = st.session_state[
-        "tasks"
-    ]
+    tasks = st.session_state["tasks"]
 
     st.markdown(
         f"""
@@ -200,55 +145,25 @@ if "tasks" in st.session_state:
                 width="medium"
             ),
 
-            "Priority": st.column_config.SelectboxColumn(
-                "Priority",
-                options=[
-                    "High",
-                    "Medium",
-                    "Low",
-                    "Not specified"
-                ]
-            ),
-
             "Follow-up": st.column_config.TextColumn(
                 "Follow-up",
                 width="large"
-            ),
-
-            "Status": st.column_config.SelectboxColumn(
-                "Status",
-                options=[
-                    "Not Started",
-                    "In Progress",
-                    "Completed",
-                    "Blocked"
-                ]
-            ),
+            )
         }
     )
 
-    # Save table edits
-    st.session_state[
-        "tasks"
-    ] = edited_df.to_dict(
+    st.session_state["tasks"] = edited_df.to_dict(
         orient="records"
     )
 
-
-# ============================================================
-# DOWNLOAD CSV
-# ============================================================
 
 if "tasks" in st.session_state:
 
     st.divider()
 
-    csv_data = (
-        pd.DataFrame(
-            st.session_state["tasks"]
-        )
-        .to_csv(index=False)
-    )
+    csv_data = pd.DataFrame(
+        st.session_state["tasks"]
+    ).to_csv(index=False)
 
     st.download_button(
         label="⬇️ Download CSV",
@@ -260,10 +175,6 @@ if "tasks" in st.session_state:
     )
 
 
-# ============================================================
-# CLEAR RESULTS
-# ============================================================
-
 if "tasks" in st.session_state:
 
     st.divider()
@@ -273,15 +184,9 @@ if "tasks" in st.session_state:
         use_container_width=True
     ):
 
-        keys_to_remove = [
-            "tasks",
-            "meeting_title"
-        ]
+        del st.session_state["tasks"]
 
-        for key in keys_to_remove:
-
-            if key in st.session_state:
-
-                del st.session_state[key]
+        if "meeting_title" in st.session_state:
+            del st.session_state["meeting_title"]
 
         st.rerun()

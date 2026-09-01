@@ -5,7 +5,6 @@ class ActionItem(BaseModel):
     task: str
     owner: str
     deadline: str
-    priority: str
     follow_up: str
 
 

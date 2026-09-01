@@ -1,0 +1,37 @@
+Project Manager: Good morning, everyone. Let's discuss the tasks for the upcoming release.
+
+Alan: I have almost completed the authentication module. I will finish the remaining work by September 10.
+
+Project Manager: Great. Once that is completed, please coordinate with Rahul so that he can start integration testing.
+
+Rahul: Sure. I will test the login, registration, and password reset features. I should be able to complete the testing by September 12.
+
+Project Manager: Please report any critical issues immediately to the development team.
+
+Anjali: I am working on the database documentation. I can complete and share the final version with the backend team by September 8.
+
+Project Manager: Perfect.
+
+Jerin: The UI team has identified a few usability issues on the dashboard. We will review the screens and fix the major issues before September 11.
+
+Project Manager: Okay. DevOps team, what is your update?
+
+DevOps Lead: We need to prepare the staging environment and verify the deployment configuration. We will complete that by September 13.
+
+Project Manager: Once the environment is ready, please inform me.
+
+Project Manager: Let's schedule another meeting on September 15 to review the progress and discuss any pending issues.
+
+Alan: Sounds good.
+
+Rahul: Okay.
+
+Project Manager: Great. Thank you, everyone.
+
+## only req below
+app.py
+ai_service.py
+config.py
+models.py
+styles.py
+requirements.txt
