@@ -1,4 +1,4 @@
-# 📋 Instant Meeting Action Taker
+# 📋 ActionSync
 
 A Generative AI-powered web application that converts meeting notes or transcripts into clear and actionable tasks.
 
